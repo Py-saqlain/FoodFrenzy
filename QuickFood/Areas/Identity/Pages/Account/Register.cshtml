@@ -1,0 +1,108 @@
+﻿@page
+@model RegisterModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Register";
+}
+
+<link rel="stylesheet" href="~/css/signup.css">
+
+<body>
+    <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <div class="left-content">
+                <h1>Join FoodFrenzy Today</h1>
+                <p>Sign up now to enjoy delicious meals delivered fast to your door. Get access to exclusive deals, track your orders, and save your favorites.</p>
+
+                <ul class="features">
+                    <li>Fast delivery in under 30 minutes</li>
+                    <li>Exclusive member discounts</li>
+                    <li>Real-time order tracking</li>
+                    <li>Easy reordering from favorites</li>
+                    <li>24/7 customer support</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="logo">
+                <h2>FoodFrenzy</h2>
+                <p>Create your account</p>
+            </div>
+
+            <!-- Identity Registration Form -->
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="horizontal-form">
+
+                   
+
+                    <!-- Email + Phone -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label asp-for="Input.Email">Email Address</label>
+                            <input asp-for="Input.Email" class="form-control" placeholder="your.email@example.com" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+                      
+                    </div>
+
+                    <!-- Password + Confirm -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label asp-for="Input.Password">Password</label>
+                            <input asp-for="Input.Password" class="form-control" placeholder="Create password" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                            <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm password" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Submit Button -->
+                    <div class="form-row full-row">
+                        <div class="form-field">
+                            <button id="registerSubmit" type="submit" class="btn">Create Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Or sign up with</span>
+                </div>
+
+                <!-- Social Login Buttons -->
+                <div class="social-login">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit" class="social-btn google" name="provider" form="external-account" value="@provider.Name">
+                            @provider.DisplayName
+                        </button>
+                    }
+                </div>
+
+                <!-- Login Link -->
+                <div class="links">
+                    <p>Already have an account? <a asp-page="./Login">Login here</a></p>
+                </div>
+            </form>
+
+            <!-- External Login Form (Hidden but required) -->
+            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post"></form>
+        </div>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>

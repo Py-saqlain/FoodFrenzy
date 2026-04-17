@@ -1,0 +1,180 @@
+﻿@model IEnumerable<FoodFrenzy.Models.FoodItem>
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="fw-bold mb-0 section-title">Food Items List</h3>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                @TempData["WarningMessage"]
+                <div class="mt-2">
+                    <form method="post" action="/Admin/ConfirmDelete" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@TempData["DeleteFoodItemId"]" />
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash me-1"></i> Confirm Delete
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="clearWarning()">
+                        Cancel
+                    </button>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="d-none d-md-table-cell">Image</th>
+                        <th>Name</th>
+                        <th class="d-none d-sm-table-cell">Category</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="d-none d-md-table-cell">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" width="50" height="50" class="rounded" alt="@item.Name" style="object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No Image</span>
+                                    }
+                                </td>
+                                <td>@item.Name</td>
+                                <td class="d-none d-sm-table-cell">@item.Category</td>
+                                <td>Rs @item.Price.ToString("N2")</td>
+                                <td>
+                                    <span class="badge bg-info">@item.Rating.ToString("N1")</span>
+                                </td>
+                                <td>
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">No</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-warning"
+                                                onclick="loadEditForm(@item.Id)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <form method="post" action="/Admin/Delete" style="display: inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-danger"
+                                                    onclick="return confirmDelete(@item.Id, '@item.Name')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No food items found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmMessage"></p>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This action will also remove this item from all order histories.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="confirmDeleteForm" method="post" action="/Admin/Delete">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteItemId" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">Delete Anyway</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Clear warning message
+    function clearWarning() {
+        window.location.href = window.location.pathname;
+    }
+
+    // Confirm delete with modal
+    function confirmDelete(id, name) {
+        // Store the delete parameters
+        document.getElementById('deleteItemId').value = id;
+        document.getElementById('deleteConfirmMessage').textContent =
+            `Are you sure you want to delete "${name}"?`;
+
+        // Show modal instead of default confirm
+        var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+
+        // Prevent default form submission
+        return false;
+    }
+
+    // Handle the confirm delete form submission
+    document.getElementById('confirmDeleteForm').addEventListener('submit', function(e) {
+        var submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+        }
+    });
+</script>

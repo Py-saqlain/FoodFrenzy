@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="fw-bold mb-0 section-title">Add New Food Item</h3>
+    </div>
+    <div class="card-body">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- FIXED: Changed from form id="addForm" to id="addProductForm" to avoid conflict -->
+        <form class="row g-3" method="post" action="/Admin/Create" id="addProductForm">
+            @Html.AntiForgeryToken()
+
+            <div class="col-md-6 col-lg-4 col-12">
+                <label class="form-label">Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="Name" required maxlength="100">
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-12">
+                <label class="form-label">Category <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="Category" required maxlength="50">
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-12">
+                <label class="form-label">Price <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text">Rs</span>
+                    <!-- FIXED: Added required attribute and proper min value -->
+                    <input type="number" class="form-control" name="Price" step="0.01" min="0.01" max="10000" required>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-12">
+                <label class="form-label">Rating <span class="text-danger">*</span></label>
+                <!-- FIXED: FoodItem model has double Rating, not decimal -->
+                <input type="number" step="0.1" class="form-control" name="Rating" min="0" max="5" value="0.0" required>
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-12">
+                <label class="form-label">Availability <span class="text-danger">*</span></label>
+                <!-- FIXED: Make sure IsAvailable is sent as string "true"/"false" -->
+                <select class="form-select" name="IsAvailable" required>
+                    <option value="true">Available</option>
+                    <option value="false">Not Available</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea class="form-control" rows="3" name="Description" required maxlength="500"></textarea>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Image URL</label>
+                <input type="text" class="form-control" name="ImageUrl" placeholder="Enter image URL">
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success w-100 py-2" id="addSubmitBtn">
+                    <i class="fas fa-plus me-2"></i>Add Food Item
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Fix JavaScript for the add form
+    document.addEventListener('DOMContentLoaded', function() {
+        const addForm = document.getElementById('addProductForm');
+        if (addForm) {
+            addForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('#addSubmitBtn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,168 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FoodFrenzy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="text-center mb-4">
+            <h4>FoodFrenzy Admin</h4>
+        </div>
+        <a href="#" onclick="showSection('dashboard')" class="active">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="#" onclick="showSection('addForm')">
+            <i class="fas fa-plus-circle"></i> Add Product
+        </a>
+        <a href="#" onclick="showSection('productsSection')">
+            <i class="fas fa-boxes"></i> Products
+        </a>
+        <a href="#" onclick="showSection('ordersSection')">
+            <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+        <a href="#" onclick="showSection('customersSection')">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="#" onclick="showSection('salesChartSection')">
+            <i class="fas fa-chart-line"></i> Sales Analytics
+        </a>
+
+        <a href="#" onclick="showSection('announcementsSection')">
+            <i class="fas fa-bullhorn"></i> Announcements
+        </a>
+
+
+        <a href="/">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="content">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+     
+        <section id="dashboard" class="form-section active">
+            <partial name="_Dashboard.cshtml" model="Model" />
+        </section>
+        <section id="addForm" class="form-section">
+            <partial name="_AddProduct.cshtml" />
+        </section>
+        <section id="productsSection" class="form-section">
+            <partial name="_ProductTable.cshtml" model="Model" />
+        </section>
+        <section id="ordersSection" class="form-section">
+            <partial name="_OrderTable.cshtml" />
+        </section>
+        <section id="customersSection" class="form-section">
+            <partial name="_CustomerTable.cshtml" />
+        </section>
+        <section id="salesChartSection" class="form-section">
+            <partial name="_SalesChart.cshtml" />
+        </section>
+
+        <section id="announcementsSection" class="form-section">
+            <partial name="_Announcement.cshtml" />
+        </section>
+       
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Food Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(sectionId) {
+           
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function loadEditForm(id) {
+            console.log('Loading edit form for ID:', id);
+
+            fetch('/Admin/Edit?id=' + id)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP ${response.status}: ${text}`);
+                        });
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    console.log('Form loaded successfully');
+                    document.getElementById('editModalBody').innerHTML = html;
+                    var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+                    editModal.show();
+                })
+                .catch(error => {
+                    console.error('Error loading edit form:', error);
+                    alert('Error loading edit form: ' + error.message);
+                });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const addForm = document.getElementById('addForm');
+            if (addForm) {
+                addForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+                });
+            }
+            document.addEventListener('submit', function(e) {
+                if (e.target.id === 'updateForm') {
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

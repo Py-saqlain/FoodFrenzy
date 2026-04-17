@@ -1,0 +1,295 @@
+﻿@model FoodFrenzy.Models.ViewModels.ContactViewModel
+@{
+    ViewData["Title"] = "Contact Us - FoodFrenzy";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/contact.css" asp-append-version="true">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="contact-page">
+    <section class="page-header">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>We're here to help! Get in touch with our team for any questions or feedback</p>
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="container mt-4">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="container mt-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>Error!</strong> Please fix the following issues:
+                <ul class="mb-0">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    <section class="contact-section">
+        <div class="container contact-container">
+            <div class="contact-info">
+                <div class="section-title">
+                    <h2>Get In Touch</h2>
+                    <p>We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                </div>
+
+                <div class="contact-methods">
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Our Location</h3>
+                            <p>123 Food Street<br>New York, NY 10001<br>United States</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Phone Number</h3>
+                            <p><a href="tel:+15551234567">+1 (555) 123-4567</a></p>
+                            <p><a href="tel:+15551234568">+1 (555) 123-4568</a></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email Address</h3>
+                            <p><a href="mailto:info@FoodFrenzy.com">info@FoodFrenzy.com</a></p>
+                            <p><a href="mailto:support@FoodFrenzy.com">support@FoodFrenzy.com</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="business-hours">
+                    <h3><i class="far fa-clock"></i> Business Hours</h3>
+                    <ul class="hours-list">
+                        <li>
+                            <span class="day">Monday - Friday</span>
+                            <span class="time">9:00 AM - 8:00 PM</span>
+                        </li>
+                        <li>
+                            <span class="day">Saturday</span>
+                            <span class="time">10:00 AM - 6:00 PM</span>
+                        </li>
+                        <li>
+                            <span class="day">Sunday</span>
+                            <span class="time">12:00 PM - 5:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="social-links">
+                    <h4>Follow Us</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Send Us a Message</h3>
+                <form id="contactForm" method="post" asp-action="Index" asp-controller="Contact" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="FirstName" class="form-label">First Name *</label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Your first name" required>
+                            <span asp-validation-for="FirstName" class="text-danger small validation-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="LastName" class="form-label">Last Name *</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Your last name" required>
+                            <span asp-validation-for="LastName" class="text-danger small validation-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label">Email Address *</label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="your.email@example.com" required>
+                        <span asp-validation-for="Email" class="text-danger small validation-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Phone" class="form-label">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" type="tel" placeholder="Your phone number">
+                        <span asp-validation-for="Phone" class="text-danger small validation-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Subject" class="form-label">Subject *</label>
+                        <select asp-for="Subject" class="form-select" required>
+                            <option value="" selected disabled>Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="product">Product Question</option>
+                            <option value="order">Order Issue</option>
+                            <option value="return">Return & Exchange</option>
+                            <option value="shipping">Shipping Information</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <span asp-validation-for="Subject" class="text-danger small validation-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Message" class="form-label">Your Message *</label>
+                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="Please describe your inquiry in detail..." required></textarea>
+                        <span asp-validation-for="Message" class="text-danger small validation-message"></span>
+                        <div class="form-text">
+                            <span id="charCount">0</span> / 5000 characters
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="SubscribeToNewsletter" class="form-check-input" id="subscribeCheck">
+                            <label asp-for="SubscribeToNewsletter" class="form-check-label" for="subscribeCheck">
+                                Subscribe to our newsletter for updates and promotions
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitButton" class="btn btn-primary submit-btn">
+                        <span class="btn-text">Send Message</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            const messageTextarea = document.getElementById('Message');
+            const charCountElement = document.getElementById('charCount');
+            const submitButton = document.getElementById('submitButton');
+
+            // Character counter for message
+            if (messageTextarea && charCountElement) {
+                messageTextarea.addEventListener('input', function() {
+                    charCountElement.textContent = this.value.length;
+                });
+
+                // Initialize character count
+                charCountElement.textContent = messageTextarea.value.length;
+            }
+
+            // Phone number formatting
+            const phoneInput = document.querySelector('[name="Phone"]');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = this.value.replace(/\D/g, '');
+                    if (value.length > 3 && value.length <= 6) {
+                        value = value.replace(/(\d{3})(\d+)/, '$1-$2');
+                    } else if (value.length > 6) {
+                        value = value.replace(/(\d{3})(\d{3})(\d+)/, '$1-$2-$3');
+                    }
+                    this.value = value.substring(0, 12); // Limit to 12 chars
+                });
+
+                // Add pattern for HTML5 validation
+                phoneInput.pattern = "^[0-9]{3}-[0-9]{3}-[0-9]{4}$";
+            }
+
+            // Form submission with validation
+            contactForm.addEventListener('submit', function (e) {
+                // Don't prevent default - let the form submit normally
+                // Just handle the loading state
+
+                // Validate form
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Show validation messages
+                    this.classList.add('was-validated');
+
+                    // Highlight invalid fields
+                    const invalidFields = this.querySelectorAll(':invalid');
+                    invalidFields.forEach(field => {
+                        field.classList.add('is-invalid');
+                        field.classList.remove('is-valid');
+                    });
+
+                    // Show first invalid field
+                    if (invalidFields.length > 0) {
+                        invalidFields[0].focus();
+                    }
+
+                    return false;
+                }
+
+                // If valid, show loading state and submit
+                if (submitButton) {
+                    const btnText = submitButton.querySelector('.btn-text');
+                    const spinner = submitButton.querySelector('.spinner-border');
+
+                    if (btnText) btnText.textContent = 'Sending...';
+                    if (spinner) spinner.classList.remove('d-none');
+                    submitButton.disabled = true;
+                }
+
+                // Form will submit normally
+                return true;
+            });
+
+            // Real-time validation on blur
+            const formFields = contactForm.querySelectorAll('input, select, textarea');
+            formFields.forEach(field => {
+                field.addEventListener('blur', function() {
+                    this.classList.remove('is-invalid', 'is-valid');
+
+                    if (this.checkValidity()) {
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.add('is-invalid');
+                    }
+                });
+
+                field.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        this.classList.remove('is-invalid');
+                        if (this.checkValidity()) {
+                            this.classList.add('is-valid');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+}

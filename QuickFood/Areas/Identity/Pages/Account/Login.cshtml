@@ -1,0 +1,81 @@
+﻿@page
+@model LoginModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Login";
+}
+
+<link rel="stylesheet" href="~/css/login.css">
+
+<body>
+    <div class="container">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <h1>Welcome to FoodFrenzy</h1>
+            <p>Order your favorite meals from our menu and enjoy fast and reliable delivery right to your home.</p>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="logo">
+                <h2>FoodFrenzy</h2>
+                <p>Login to your account</p>
+            </div>
+
+            <!-- Identity Login Form -->
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" placeholder="Enter your password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-group">
+                    <label asp-for="Input.RememberMe" class="d-flex align-items-center gap-2">
+                        <input asp-for="Input.RememberMe" class="form-check-input" />
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+
+                <!-- Login Button -->
+                <button id="login-submit" type="submit" class="btn">Login</button>
+
+                <div class="links">
+                    <p><a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Don't have an account? Sign up here</a></p>
+                    <p><a asp-page="./ForgotPassword">Forget Password? Reset it here</a></p>
+                </div>
+            </form>
+
+            <!-- External Logins -->
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="text-center mt-3">
+                    <p>Or login using</p>
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <button type="submit" class="btn mt-2 w-100" name="provider" value="@provider.Name">
+                                @provider.DisplayName
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</body>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

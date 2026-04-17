@@ -1,0 +1,225 @@
+﻿@model FoodFrenzy.Models.OrderViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<link rel="stylesheet" href="~/css/checkout.css">
+
+<body>
+    <section class="page-header">
+        <div class="container">
+            <h1>Checkout</h1>
+            <p>Complete your order with secure payment</p>
+        </div>
+    </section>
+
+    <section class="checkout-section">
+        <div class="container checkout-container">
+            <form method="post" asp-action="PlaceOrder" class="checkout-forms" id="checkoutForm">
+                @Html.AntiForgeryToken()
+
+                <div class="form-section active" id="delivery-info">
+                    <div class="form-header">
+                        <h2>Delivery Information</h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CustomerEmail">Contact Information</label>
+                        <input type="email" asp-for="CustomerEmail" class="form-control" placeholder="Email address" required
+                               value="@ViewBag.UserEmail">
+                        <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" asp-for="CustomerName" class="form-control" placeholder="Full name" required
+                                   value="@ViewBag.UserFullName">
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CustomerPhone">Phone Number</label>
+                        <input type="tel" asp-for="CustomerPhone" class="form-control" placeholder="Phone number" required
+                               value="@ViewBag.UserPhone">
+                        <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DeliveryAddress">Delivery Address</label>
+                        <input type="text" asp-for="DeliveryAddress" class="form-control" placeholder="Street address" required
+                               value="@ViewBag.UserAddress">
+                        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="City">City</label>
+                            <input type="text" asp-for="City" class="form-control" placeholder="City" required>
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ZipCode">ZIP Code</label>
+                            <input type="text" asp-for="ZipCode" class="form-control" placeholder="ZIP code" required>
+                            <span asp-validation-for="ZipCode" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DeliveryInstructions">Delivery Instructions (Optional)</label>
+                        <textarea asp-for="DeliveryInstructions" class="form-control" rows="3"
+                                  placeholder="Any special delivery instructions?"></textarea>
+                        <span asp-validation-for="DeliveryInstructions" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="PaymentMethod">Payment Method</label>
+                        <div class="payment-methods">
+                            <div class="payment-method selected" data-value="CreditCard">
+                                <div class="payment-icon">
+                                    <i class="fab fa-cc-visa"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h4>Credit/Debit Card</h4>
+                                    <p>Pay securely with your card</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-method" data-value="PayPal">
+                                <div class="payment-icon">
+                                    <i class="fab fa-paypal"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h4>PayPal</h4>
+                                    <p>Pay with your PayPal account</p>
+                                </div>
+                            </div>
+
+                            <div class="payment-method" data-value="Cash">
+                                <div class="payment-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h4>Cash on Delivery</h4>
+                                    <p>Pay when you receive your order</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" asp-for="PaymentMethod" id="paymentMethodInput" value="CreditCard">
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="/Cart" class="btn btn-outline">Back to Cart</a>
+                        <button type="submit" class="btn btn-primary">Place Order</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+
+                <div class="order-items">
+                    @if (ViewBag.Cart != null)
+                    {
+                        foreach (var item in ViewBag.Cart as List<CartItem>)
+                        {
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <div class="item-image">
+                                        <img src="@item.ImageUrl" alt="@item.Name">
+                                    </div>
+                                    <div class="item-details">
+                                        <h4>@item.Name</h4>
+                                        <p>Qty: @item.Quantity</p>
+                                    </div>
+                                </div>
+                                <div class="item-price">Rs.@((item.Price * item.Quantity).ToString("0.00"))</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Subtotal (@ViewBag.ItemCount items)</span>
+                    <span class="summary-value">Rs.@ViewBag.Subtotal.ToString("0.00")</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Delivery Fee</span>
+                    <span class="summary-value">Rs.@ViewBag.DeliveryFee.ToString("0.00")</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Service Fee</span>
+                    <span class="summary-value">Rs.@ViewBag.ServiceFee.ToString("0.00")</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Tax (8%)</span>
+                    <span class="summary-value">Rs.@ViewBag.Tax.ToString("0.00")</span>
+                </div>
+
+                <div class="summary-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-value">Rs.@ViewBag.Total.ToString("0.00")</span>
+                </div>
+
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>Your payment information is secure and encrypted</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Delivery method selection
+            document.querySelectorAll('.delivery-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.delivery-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+
+                    // Update hidden input value
+                    document.getElementById('deliveryMethodInput').value = this.dataset.value;
+                });
+            });
+
+            // Payment method selection
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    // Remove selected class from all methods
+                    document.querySelectorAll('.payment-method').forEach(m => {
+                        m.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked method
+                    this.classList.add('selected');
+
+                    // Update hidden input value
+                    document.getElementById('paymentMethodInput').value = this.dataset.value;
+                });
+            });
+
+            // Form submission
+            document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // You could add additional validation here
+                return true;
+            });
+        });
+    </script>
+}

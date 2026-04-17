@@ -1,0 +1,11 @@
+[2025-11-29 14:44:17] ERROR: Haseeb and Noor
+[2025-11-29 14:44:26] ERROR: Haseeb and Noor
+[2025-12-14 12:35:12] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:18] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:24] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:27] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:30] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:37] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:40] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:35:54] Error: Must declare the scalar variable "@userId".
+[2025-12-14 12:36:04] Error: Must declare the scalar variable "@userId".

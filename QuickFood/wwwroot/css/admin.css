@@ -1,0 +1,277 @@
+:root {
+    --primary-color: #e74a3b;
+    --secondary-color: #f4f5f7;
+    --accent-color: #4e73df;
+    --success-color: #1cc88a;
+    --warning-color: #f6c23e;
+    --danger-color: #e74a3b;
+}
+
+body {
+    background: var(--secondary-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+    height: 100vh;
+    background: #e55e00;
+    color: white;
+    position: fixed;
+    width: 250px;
+    padding: 20px;
+}
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: #ff6b01;
+        }
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.form-section {
+    display: none;
+}
+
+    .form-section.active {
+        display: block;
+    }
+
+.section-title {
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+.section-title {
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    border: none;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+.stats-card {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Form toggle styles */
+.form-section {
+    display: none;
+}
+
+    .form-section.active {
+        display: block;
+    }
+
+.badge {
+    font-size: 0.75em;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-delivered {
+    background-color: #198754;
+    color: #fff;
+}
+
+.status-canceled {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.status-shipped {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+/* Add to admin.css */
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 600;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    padding: 1rem 0;
+}
+
+    .list-group-item:first-child {
+        border-top: none;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+.product-badge {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.progress {
+    height: 6px;
+    background-color: #e9ecef;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #36A2EB;
+    box-shadow: 0 0 0 0.25rem rgba(54, 162, 235, 0.25);
+}
+/* Add to admin.css or in a style tag */
+.badge {
+    font-size: 0.85em;
+    padding: 0.35em 0.65em;
+}
+
+.bg-success {
+    background-color: #1cc88a !important;
+}
+
+.bg-warning {
+    background-color: #f6c23e !important;
+}
+
+.bg-info {
+    background-color: #36b9cc !important;
+}
+
+.bg-secondary {
+    background-color: #858796 !important;
+}
+
+.bg-danger {
+    background-color: #e74a3b !important;
+}
+
+.bg-primary {
+    background-color: #4e73df !important;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.input-group-sm {
+    width: auto;
+}
+
+/* Status badges specific styling */
+.status-pending {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.status-processing {
+    background-color: #17a2b8 !important;
+}
+
+.status-shipped {
+    background-color: #007bff !important;
+}
+
+.status-delivered {
+    background-color: #28a745 !important;
+}
+
+.status-canceled {
+    background-color: #dc3545 !important;
+}
+
+/* Table improvements */
+.table-responsive {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+ 
+ background-color:#000;
+
+    z-index: 10;
+}
+
+/* Modal improvements */
+.modal-dialog {
+    max-width: 800px;
+}

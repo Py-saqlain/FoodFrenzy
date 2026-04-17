@@ -1,0 +1,279 @@
+﻿@* @model IEnumerable<FoodFrenzy.Models.FoodItem>
+<link rel="stylesheet" href="~/css/index.css">
+<body>
+
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h2>Delicious Food Delivered Fast</h2>
+            <p>Order from your favorite restaurants and enjoy fresh, hot meals delivered right to your doorstep in minutes.</p>
+            <div class="hero-buttons">
+                <a href="/Explore/Index" class="btn btn-primary">Explore Menu</a>
+                <a href="/About/Index" class="btn btn-outline">About Us</a>
+
+            </div>
+        </div>
+    </section>
+  
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose FoodFrenzy</h2>
+                <p>We provide the best food delivery experience with our unique features</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your food delivered in under 30 minutes guaranteed</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Fresh Food</h3>
+                    <p>All our meals are prepared with fresh ingredients daily</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h3>Best Prices</h3>
+                    <p>Enjoy great food at affordable prices with regular discounts</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our customer service team is always here to help you</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <vc:top-products items="@(Model.ToList())"></vc:top-products>
+
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>Getting your favorite food delivered is simple with these 3 steps</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose Your Food</h3>
+                    <p>Browse our menu and select your favorite dishes</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Pay Online</h3>
+                    <p>Securely pay for your order using our payment system</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your food delivered hot and fresh to your doorstep</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>What Our Customers Say</h2>
+                <p>Real reviews from people across Pakistan</p>
+            </div>
+
+            <div class="testimonials-grid">
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Loved the taste and packaging. My order arrived fresh and warm. Truly reliable service."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Ayesha Khan" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Ayesha Khan</h4>
+                            <p>Regular Customer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The delivery was quick and the food quality was great. Will definitely order again."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="Ali Raza" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Ali Raza</h4>
+                            <p>Food Lover</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Very convenient and easy to use. The biryani tasted amazing and the price was fair."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Fatima Malik" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Fatima Malik</h4>
+                            <p>Biryani Fan</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+</body> *@
+
+@model IEnumerable<FoodFrenzy.Models.FoodItem>
+<link rel="stylesheet" href="~/css/index.css">
+<body>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h2>Delicious Food Delivered Fast</h2>
+            <p>Order from your favorite restaurants and enjoy fresh, hot meals delivered right to your doorstep in minutes.</p>
+            <div class="hero-buttons">
+                <a href="/Explore/Index" class="btn btn-primary">Explore Menu</a>
+                <a href="/About/Index" class="btn btn-outline">About Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADD THIS LINE - Announcement Banner -->
+    <partial name="_annoucement" />
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose FoodFrenzy</h2>
+                <p>We provide the best food delivery experience with our unique features</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your food delivered in under 30 minutes guaranteed</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Fresh Food</h3>
+                    <p>All our meals are prepared with fresh ingredients daily</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h3>Best Prices</h3>
+                    <p>Enjoy great food at affordable prices with regular discounts</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our customer service team is always here to help you</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <vc:top-products items="@(Model.ToList())"></vc:top-products>
+
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>Getting your favorite food delivered is simple with these 3 steps</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose Your Food</h3>
+                    <p>Browse our menu and select your favorite dishes</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Pay Online</h3>
+                    <p>Securely pay for your order using our payment system</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your food delivered hot and fresh to your doorstep</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>What Our Customers Say</h2>
+                <p>Real reviews from people across Pakistan</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Loved the taste and packaging. My order arrived fresh and warm. Truly reliable service."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Ayesha Khan" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Ayesha Khan</h4>
+                            <p>Regular Customer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The delivery was quick and the food quality was great. Will definitely order again."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="Ali Raza" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Ali Raza</h4>
+                            <p>Food Lover</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Very convenient and easy to use. The biryani tasted amazing and the price was fair."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Fatima Malik" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Fatima Malik</h4>
+                            <p>Biryani Fan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>

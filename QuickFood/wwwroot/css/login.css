@@ -1,0 +1,173 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Body */
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Container */
+.container {
+    display: flex;
+    max-width: 1000px;
+    width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 1;
+    background-color: #ff6b01;
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .left-panel h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .left-panel p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    background-color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Logo */
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+    .logo h2 {
+        color: #ff6b01;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .logo p {
+        font-size: 1rem;
+        color: #555;
+    }
+
+/* Form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+    .form-control:focus {
+        border-color: #ff6b01;
+        outline: none;
+    }
+
+/* Validation Messages */
+.text-danger {
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Remember Me Checkbox */
+.form-check-input {
+    margin-top: 0;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* Button */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #ff6b01;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .btn:hover {
+        background-color: #e55e00;
+    }
+
+/* Links */
+.links {
+    text-align: center;
+    margin-top: 20px;
+}
+
+    .links a {
+        color: #ff6b01;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+/* External Login Buttons */
+.right-panel .text-center p {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.right-panel .text-center .btn {
+    margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .right-panel {
+        padding: 30px;
+    }
+}

@@ -1,0 +1,436 @@
+﻿@{
+    var orders = ViewBag.Orders as List<FoodFrenzy.Models.Order> ?? new List<FoodFrenzy.Models.Order>();
+}
+
+<div class="card shadow">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary section-title">Orders Management</h6>
+        <div>
+            <button class="btn btn-primary btn-sm" onclick="refreshOrders()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+         
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0" ikald="ordersTable">
+                <thead>
+                    <tr>
+                        <th style="color:white;">Order ID</th>
+                        <th style="color:white;">Customer</th>
+                        <th style="color:white;">Date</th>
+                        <th style="color:white;">Items</th>
+                        <th style="color:white;">Total</th>
+                        <th style="color:white;">Status</th>
+                        <th style="color:white;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (orders.Any())
+                    {
+                        @foreach (var order in orders)
+                        {
+                            <tr id="order-row-@order.Id">
+                                <td>
+                                    <small class="text-muted d-block">ID: @order.Id</small>
+                                    <a href="javascript:void(0)" onclick="viewOrderDetails(@order.Id)"
+                                       class="text-primary fw-bold" title="View Details">
+                                        #@order.OrderNumber
+                                    </a>
+                                </td>
+                                <td>@order.CustomerName</td>
+                                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @if (order.OrderItems != null && order.OrderItems.Any())
+                                    {
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                    type="button" data-bs-toggle="dropdown">
+                                                @order.OrderItems.Count() item(s)
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @foreach (var item in order.OrderItems.Take(5))
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item">
+                                                            @item.FoodItemName × @item.Quantity
+                                                            <span class="text-muted">(Rs @item.Price.ToString("N2") each)</span>
+                                                        </a>
+                                                    </li>
+                                                }
+                                                @if (order.OrderItems.Count > 5)
+                                                {
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-muted">+ @(order.OrderItems.Count - 5) more</a></li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No items</span>
+                                    }
+                                </td>
+                                <td>Rs @order.Total.ToString("N2")</td>
+                                <td>
+                                    @{
+                                        var statusClass = order.Status switch
+                                        {
+                                            "Delivered" => "badge bg-success",
+                                            "Processing" => "badge bg-warning",
+                                            "Shipped" => "badge bg-info",
+                                            "Pending" => "badge bg-secondary",
+                                            "Cancelled" => "badge bg-danger",
+                                            _ => "badge bg-secondary"
+                                        };
+                                        var statusText = order.Status switch
+                                        {
+                                            "Processing" => "Processing",
+                                            "Shipped" => "Shipped",
+                                            "Delivered" => "Delivered",
+                                            "Cancelled" => "Cancelled",
+                                            _ => "Pending"
+                                        };
+                                    }
+                                    <span class="@statusClass" id="status-badge-@order.Id">@statusText</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" onclick="viewOrderDetails(@order.Id)"
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-warning" onclick="showStatusModal(@order.Id, '@order.Status')"
+                                                title="Update Status">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="fas fa-shopping-cart fa-2x mb-2 d-block"></i>
+                                No orders found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Details - <span id="orderNumberTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="orderDetailsBody">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Update Modal -->
+<div class="modal fade" id="statusUpdateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Order Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="statusUpdateForm">
+                <div class="modal-body">
+                    <input type="hidden" id="updateOrderId" name="id">
+                    <div class="mb-3">
+                        <label class="form-label">Select Status</label>
+                        <select class="form-select" id="updateStatus" name="status" required>
+                            <option value="">Select Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div id="statusUpdateMessage" class="alert" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="updateStatusBtn">
+                        <span id="updateStatusText">Update Status</span>
+                        <span id="updateStatusSpinner" class="spinner-border spinner-border-sm" style="display:none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function refreshOrders() {
+        location.reload();
+    }
+
+    function testDebug() {
+        fetch('/Admin/DebugOrders')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Debug Orders:', data);
+                alert(`Total Orders: ${data.totalOrders || data.TotalOrders}\nCheck console for details.`);
+            })
+            .catch(error => {
+                console.error('Debug error:', error);
+                alert('Debug failed: ' + error.message);
+            });
+    }
+
+    function viewOrderDetails(orderId) {
+        console.log('Viewing order details for ID:', orderId);
+
+        fetch(`/Admin/GetOrderDetails?id=${orderId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Order details response:', data);
+                if (data.success) {
+                    const order = data.order;
+                    const modalBody = document.getElementById('orderDetailsBody');
+
+                    let itemsHtml = '';
+                    if (order.items && order.items.length > 0) {
+                        itemsHtml = order.items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td class="text-center">${item.quantity}</td>
+                                <td class="text-end">Rs ${parseFloat(item.price).toFixed(2)}</td>
+                                <td class="text-end">Rs ${(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    modalBody.innerHTML = `
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6>Customer Information</h6>
+                                <p><strong>Name:</strong> ${order.customerName || 'N/A'}</p>
+                                <p><strong>Email:</strong> ${order.customerEmail || 'N/A'}</p>
+                                <p><strong>Phone:</strong> ${order.customerPhone || 'N/A'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Order Information</h6>
+                                <p><strong>Order Date:</strong> ${order.orderDate}</p>
+                                <p><strong>Status:</strong> <span class="badge ${getStatusClass(order.status)}">${order.status}</span></p>
+                                <p><strong>Delivery Address:</strong> ${order.deliveryAddress || 'N/A'}</p>
+                            </div>
+                        </div>
+
+                        <h6>Order Items</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                                        <td class="text-end"><strong>Rs ${parseFloat(order.total).toFixed(2)}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    `;
+
+                    document.getElementById('orderNumberTitle').textContent = order.orderNumber;
+                    new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
+                } else {
+                    showToast('error', data.message || 'Error loading order details');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Error loading order details: ' + error.message);
+            });
+    }
+
+    function showStatusModal(orderId, currentStatus) {
+        console.log('Showing status modal for order:', orderId, 'Current status:', currentStatus);
+        document.getElementById('updateOrderId').value = orderId;
+        document.getElementById('updateStatus').value = currentStatus || '';
+        document.getElementById('statusUpdateMessage').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('statusUpdateModal')).show();
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'Delivered': return 'bg-success';
+            case 'Processing': return 'bg-warning';
+            case 'Shipped': return 'bg-info';
+            case 'Pending': return 'bg-secondary';
+            case 'Cancelled': return 'bg-danger';
+            default: return 'bg-secondary';
+        }
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'Processing': return 'Processing';
+            case 'Shipped': return 'Shipped';
+            case 'Delivered': return 'Delivered';
+            case 'Cancelled': return 'Cancelled';
+            default: return 'Pending';
+        }
+    }
+
+    // Handle status update form submission
+    document.getElementById('statusUpdateForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const orderId = document.getElementById('updateOrderId').value;
+        const status = document.getElementById('updateStatus').value;
+
+        if (!orderId || !status) {
+            showStatusMessage('Please select a status', 'danger');
+            return;
+        }
+
+        console.log('Updating order status:', { orderId, status });
+
+        const updateBtn = document.getElementById('updateStatusBtn');
+        const updateText = document.getElementById('updateStatusText');
+        const updateSpinner = document.getElementById('updateStatusSpinner');
+
+        // Disable button and show spinner
+        updateBtn.disabled = true;
+        updateText.style.display = 'none';
+        updateSpinner.style.display = 'inline-block';
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('id', orderId);
+        formData.append('status', status);
+
+        // Send AJAX request with FormData
+        fetch('/Admin/UpdateOrderStatusAjax', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+
+            if (data.success) {
+                // Update UI
+                const badge = document.getElementById(`status-badge-${orderId}`);
+                if (badge) {
+                    badge.className = `badge ${getStatusClass(status)}`;
+                    badge.textContent = getStatusText(status);
+                }
+
+                showStatusMessage(data.message, 'success');
+
+                // Show success toast
+                showToast('success', data.message);
+
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('statusUpdateModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                }, 2000);
+            } else {
+                showStatusMessage(data.message || 'Failed to update status', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatusMessage('Error updating status: ' + error.message, 'danger');
+        })
+        .finally(() => {
+            // Re-enable button
+            updateBtn.disabled = false;
+            updateText.style.display = 'inline';
+            updateSpinner.style.display = 'none';
+        });
+    });
+
+    function showStatusMessage(message, type) {
+        const messageDiv = document.getElementById('statusUpdateMessage');
+        messageDiv.textContent = message;
+        messageDiv.className = `alert alert-${type}`;
+        messageDiv.style.display = 'block';
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Toast notification function
+    function showToast(type, message) {
+        // You can implement a proper toast notification system
+        // For now, using alert
+        if (type === 'success') {
+            alert('✓ ' + message);
+        } else {
+            alert('✗ ' + message);
+        }
+    }
+</script>
+
+<style>
+    .badge {
+        font-size: 0.85em;
+        padding: 0.35em 0.65em;
+    }
+
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: 0.2rem;
+    }
+
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        vertical-align: middle;
+    }
+</style>

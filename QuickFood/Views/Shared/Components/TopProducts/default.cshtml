@@ -1,0 +1,52 @@
+﻿@model IEnumerable<FoodFrenzy.Models.FoodItem>
+<section class="popular-dishes">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Popular Dishes</h2>
+            <p>People love our authentic Pakistani flavors</p>
+        </div>
+
+        <div class="dishes-grid">
+
+            @foreach (var p in Model)
+            {
+                <div class="dish-card">
+                    <img src="@p.ImageUrl"
+                         alt="@p.Name" class="dish-image">
+                    <div class="dish-info">
+                        <h3>@p.Name</h3>
+                        <p>@p.Description</p>
+                        <div class="dish-meta">
+                            <span class="price">Rs. @p.Price</span>
+                            <div class="rating">
+                                @{
+                                    int fullStars = (int)Math.Floor(p.Rating);
+                                    bool halfStar = (p.Rating - fullStars) >= 0.5;
+                                    int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                }
+
+                                @for (int i = 0; i < fullStars; i++)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+
+                                @if (halfStar)
+                                {
+                                    <i class="fas fa-star-half-alt"></i>
+                                }
+
+                                @for (int i = 0; i < emptyStars; i++)
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</section>

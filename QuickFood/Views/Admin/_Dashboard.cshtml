@@ -1,0 +1,153 @@
+﻿@model IEnumerable<FoodFrenzy.Models.FoodItem>
+@{
+    var orders = ViewBag.Orders as List<FoodFrenzy.Models.Order> ?? new List<FoodFrenzy.Models.Order>();
+    var users = ViewBag.Users as IEnumerable<FoodFrenzy.Models.ApplicationUser> ?? new List<FoodFrenzy.Models.ApplicationUser>();
+}
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Products
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-box fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Orders
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@orders.Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Total Customers
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@users.Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Available Products
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(f => f.IsAvailable)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Products</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th style="color:white;">Name</th>
+                                <th style="color:white;">Category</th>
+                                <th style ="color:white;">Price</th>
+                                <th style="color:white;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Take(5))
+                            {
+                                <tr>
+                                    <td>@item.Name</td>
+                                    <td>@item.Category</td>
+                                    <td>Rs @item.Price.ToString("N2")</td>
+                                    <td>
+                                        @if (item.IsAvailable)
+                                        {
+                                            <span class="badge bg-success">Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Not Available</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+            </div>
+            <div class="card-body">
+                @foreach (var order in orders.Take(3))
+                {
+                    <div class="mb-3 pb-2 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>#@order.OrderNumber</strong>
+                            <span class="badge @(order.Status == "Delivered" ? "bg-success" :
+                                                                                    order.Status == "Processing" ? "bg-warning" :
+                                                                                    order.Status == "Pending" ? "bg-secondary" :
+                                                                                    "bg-danger")">
+                            @order.Status
+                        </span>
+                    </div>
+                    <div class="small text-muted">@order.CustomerName</div>
+                    <div class="small">Rs @order.Total.ToString("N2")</div>
+                </div>
+                                }
+                @if (!orders.Any())
+                {
+                    <p class="text-center text-muted">No recent orders</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

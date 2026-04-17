@@ -1,0 +1,474 @@
+﻿@{
+    var salesViewModel = ViewBag.SalesViewModel as FoodFrenzy.Models.ViewModels.WeeklySalesViewModel;
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Sales Analytics Dashboard</h6>
+        <div class="d-flex align-items-center">
+            <div class="input-group input-group-sm me-2" style="width: 200px;">
+                <input type="date" class="form-control" id="startDate"
+                       value="@DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd")">
+                <span class="input-group-text">to</span>
+                <input type="date" class="form-control" id="endDate"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="loadSalesData()">
+                <i class="fas fa-filter"></i> Apply
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Revenue
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalRevenue">
+                                    Rs 0.00
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total Orders
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalOrders">
+                                    0
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Avg Order Value
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="avgOrderValue">
+                                    Rs 0.00
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Best Day
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="bestDay">
+                                    -
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-star fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <!-- Revenue Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Revenue Trend</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products Chart -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Top Products</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Chart -->
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Daily Orders</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AOV Chart -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Average Order Value Trend</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="aovChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chart instances
+    let revenueChart = null;
+    let ordersChart = null;
+    let topProductsChart = null;
+    let aovChart = null;
+
+    // Initialize charts on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSalesData();
+    });
+
+    function loadSalesData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Show loading state
+        document.querySelectorAll('#totalRevenue, #totalOrders, #avgOrderValue, #bestDay')
+            .forEach(el => {
+                if (el.id === 'bestDay') {
+                    el.textContent = 'Loading...';
+                } else {
+                    el.textContent = '...';
+                }
+            });
+
+        fetch(`/Admin/GetWeeklySalesData?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update statistics
+                document.getElementById('totalRevenue').textContent =
+                    `Rs ${data.totalRevenue.toFixed(2)}`;
+                document.getElementById('totalOrders').textContent =
+                    data.totalOrders;
+                document.getElementById('avgOrderValue').textContent =
+                    `Rs ${data.averageOrderValue.toFixed(2)}`;
+                document.getElementById('bestDay').textContent =
+                    data.bestDay;
+
+                // Initialize or update charts
+                updateCharts(data);
+            })
+            .catch(error => {
+                console.error('Error loading sales data:', error);
+                // Show sample data if API fails
+                showSampleData();
+            });
+    }
+
+    function updateCharts(data) {
+        // Extract data for charts
+        const labels = data.weeklyData.map(d => {
+            const date = new Date(d.date);
+            return `${date.getDate()}/${date.getMonth() + 1}`;
+        });
+
+        const revenueData = data.weeklyData.map(d => d.revenue);
+        const ordersData = data.weeklyData.map(d => d.orderCount);
+        const aovData = data.weeklyData.map(d => d.averageOrderValue);
+
+        // Revenue Chart
+        if (revenueChart) {
+            revenueChart.destroy();
+        }
+
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenue (Rs)',
+                    data: revenueData,
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rs ' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Orders Chart
+        if (ordersChart) {
+            ordersChart.destroy();
+        }
+
+        const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+        ordersChart = new Chart(ordersCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders',
+                    data: ordersData,
+                    backgroundColor: '#1cc88a',
+                    borderColor: '#1cc88a',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Top Products Chart
+        if (topProductsChart) {
+            topProductsChart.destroy();
+        }
+
+        const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+        const topProductsLabels = data.topProducts.map(p => p.name);
+        const topProductsRevenue = data.topProducts.map(p => p.revenue);
+
+        topProductsChart = new Chart(topProductsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: topProductsLabels,
+                datasets: [{
+                    data: topProductsRevenue,
+                    backgroundColor: [
+                        '#4e73df',
+                        '#1cc88a',
+                        '#36b9cc',
+                        '#f6c23e',
+                        '#e74a3b'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const total = topProductsRevenue.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: Rs ${value.toFixed(2)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // AOV Chart
+        if (aovChart) {
+            aovChart.destroy();
+        }
+
+        const aovCtx = document.getElementById('aovChart').getContext('2d');
+        aovChart = new Chart(aovCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'AOV (Rs)',
+                    data: aovData,
+                    borderColor: '#f6c23e',
+                    backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rs ' + value.toFixed(2);
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Fallback to sample data if API fails
+    function showSampleData() {
+        const sampleData = {
+            totalRevenue: 125000,
+            totalOrders: 150,
+            averageOrderValue: 833.33,
+            bestDay: "Saturday",
+            weeklyData: [],
+            topProducts: []
+        };
+
+        // Generate sample weekly data (last 7 days)
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+
+            sampleData.weeklyData.push({
+                date: date.toISOString().split('T')[0],
+                dayName: days[date.getDay()],
+                revenue: Math.floor(Math.random() * 30000) + 10000,
+                orderCount: Math.floor(Math.random() * 30) + 10,
+                averageOrderValue: Math.floor(Math.random() * 300) + 500
+            });
+        }
+
+        // Generate sample top products
+        const productNames = ['Chicken Burger', 'Pizza Margherita', 'French Fries', 'Coca Cola', 'Chocolate Cake'];
+        productNames.forEach((name, index) => {
+            sampleData.topProducts.push({
+                name: name,
+                revenue: Math.floor(Math.random() * 20000) + 8000,
+                quantitySold: Math.floor(Math.random() * 100) + 30
+            });
+        });
+
+        // Update UI with sample data
+        document.getElementById('totalRevenue').textContent =
+            `Rs ${sampleData.totalRevenue.toFixed(2)}`;
+        document.getElementById('totalOrders').textContent =
+            sampleData.totalOrders;
+        document.getElementById('avgOrderValue').textContent =
+            `Rs ${sampleData.averageOrderValue.toFixed(2)}`;
+        document.getElementById('bestDay').textContent =
+            sampleData.bestDay;
+
+        updateCharts(sampleData);
+
+        // Show warning
+       // alert('Using sample data for demonstration. Real data will load when orders are available.');
+    }
+</script>

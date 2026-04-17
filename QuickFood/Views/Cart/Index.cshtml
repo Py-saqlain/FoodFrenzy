@@ -1,0 +1,652 @@
+﻿@model List<FoodFrenzy.Models.CartItem>
+
+<link rel="stylesheet" href="~/css/cart.css">
+
+<body>
+    <section class="page-header">
+        <div class="container">
+            <h1>My Cart</h1>
+            <p>Review your items and proceed to checkout</p>
+        </div>
+    </section>
+
+    @if (Model == null || !Model.Any())
+    {
+        <section class="empty-cart-section">
+            <div class="container">
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h2>Your cart is empty</h2>
+                    <p>Looks like you haven't added any items to your cart yet.</p>
+                    <a href="/Explore" class="btn btn-primary">Continue Shopping</a>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="cart-section">
+            <div class="container cart-container">
+                <div class="cart-items">
+                    <div class="cart-header">
+                        <h2>Your Order (@ViewBag.ItemCount items)</h2>
+                        <form method="post" asp-action="Clear" class="d-inline" id="clearCartForm">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="clear-cart" id="clearCartBtn">
+                                <i class="fas fa-trash"></i> Clear Cart
+                            </button>
+                        </form>
+                    </div>
+
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item" data-item-id="@item.Id">
+                            <div class="item-image">
+                                <img src="@item.ImageUrl" alt="@item.Name">
+                            </div>
+                            <div class="item-details">
+                                <div class="item-info">
+                                    <h3>@item.Name</h3>
+                                    <div class="item-price">Rs.@item.Price.ToString("0.00")</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn minus-btn"
+                                                data-cart-item-id="@item.Id"
+                                                data-action="decrease"
+                                                @(item.Quantity <= 1 ? "disabled" : "")>
+                                            -
+                                        </button>
+                                        <span class="quantity-input" id="quantity-@item.Id">@item.Quantity</span>
+                                        <button type="button" class="quantity-btn plus-btn"
+                                                data-cart-item-id="@item.Id"
+                                                data-action="increase">
+                                            +
+                                        </button>
+                                    </div>
+                                    <button type="button" class="remove-item" data-cart-item-id="@item.Id">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Subtotal (@ViewBag.ItemCount items)</span>
+                        <span class="summary-value">Rs.@ViewBag.Subtotal</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Delivery Fee</span>
+                        <span class="summary-value">Rs.@ViewBag.DeliveryFee</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Service Fee</span>
+                        <span class="summary-value">Rs.@ViewBag.ServiceFee</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="summary-label">Tax (8%)</span>
+                        <span class="summary-value">Rs.@ViewBag.Tax</span>
+                    </div>
+
+                    <div class="summary-total">
+                        <span class="total-label">Total</span>
+                        <span class="total-value">Rs.@ViewBag.Total</span>
+                    </div>
+
+                    @if (ViewBag.IsAuthenticated)
+                    {
+                        <a asp-action="Checkout" asp-controller="Cart">
+                            <button class="btn btn-success checkout-btn">
+                                <i class="fas fa-lock"></i> Proceed to Checkout
+                            </button>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Identity/Account/Login?returnUrl=/Cart">
+                           <button class="btn btn-success checkout-btn">
+                                 <i class="fas fa-sign-in-alt"></i> Login to Checkout
+                            </button>
+                        </a>
+                    }
+
+                    <div class="continue-shopping">
+                        <a href="/Explore" class="btn btn-outline">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
+    @* @if (Model != null && Model.Any())
+    {
+        <section class="recently-viewed">
+            <div class="container">
+                <div class="section-title">
+                    <h2>You Might Also Like</h2>
+                    <p>Discover more delicious options</p>
+                </div>
+
+                <div class="food-grid">
+                    <!-- These would typically come from a database -->
+                    <div class="food-card">
+                        <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                             alt="Creamy Alfredo Pasta" class="food-image">
+                        <div class="food-info">
+                            <h3>Creamy Alfredo Pasta</h3>
+                            <div class="food-meta">
+                                <span class="food-price">$13.49</span>
+                                <form method="post" asp-action="Add">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="foodItemId" value="1" />
+                                    <input type="hidden" name="name" value="Creamy Alfredo Pasta" />
+                                    <input type="hidden" name="price" value="13.49" />
+                                    <input type="hidden" name="imageUrl"
+                                           value="https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" />
+                                    <button type="submit" class="add-to-cart-small">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add more items similarly -->
+                </div>
+            </div>
+        </section>
+    } *@
+</body>
+
+<style>
+    /* Cart Page Styles */
+    .page-header {
+        background: linear-gradient(135deg, #e55e00 0%, #ff6b01 100%);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+    }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+    .empty-cart-section {
+        padding: 80px 0;
+        text-align: center;
+    }
+
+    .empty-cart-icon {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    .empty-cart h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .empty-cart p {
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .cart-section {
+        padding: 40px 0;
+    }
+
+    .cart-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+    }
+
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eee;
+    }
+
+        .cart-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+    .clear-cart {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+
+        .clear-cart:hover {
+            background: #ff5252;
+        }
+
+    .cart-item {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .item-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .item-details {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item-info h3 {
+        margin: 0 0 5px 0;
+        color: #333;
+        font-size: 1.2rem;
+    }
+
+    .item-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-top: 5px;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+        .quantity-btn:hover:not(:disabled) {
+            background: #f5f5f5;
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .quantity-input {
+        width: 50px;
+        height: 32px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .remove-item {
+        background: none;
+        border: none;
+        color: #ff6b6b;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 5px;
+    }
+
+        .remove-item:hover {
+            color: #ff5252;
+        }
+
+    .order-summary {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+        .order-summary h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .summary-label {
+        color: #666;
+    }
+
+    .summary-value {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+        font-size: 1.2rem;
+    }
+
+    .total-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .total-value {
+        font-weight: bold;
+        color: #667eea;
+        font-size: 1.3rem;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 15px;
+        margin-top: 25px;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+    .continue-shopping {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-outline {
+        display: inline-block;
+        padding: 10px 20px;
+        border: 2px solid #667eea;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+    /* Recently Viewed Section */
+    .recently-viewed {
+        padding: 60px 0;
+        background: #f8f9fa;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .section-title h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #666;
+        }
+
+    .food-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .food-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+    .food-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .food-info {
+        padding: 20px;
+    }
+
+        .food-info h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+    .food-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .food-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .add-to-cart-small {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+
+        .add-to-cart-small:hover {
+            background: #218838;
+        }
+
+    /* Responsive Design */
+    media (max-width: 768px) {
+        .cart-container
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-item {
+        flex-direction: column;
+    }
+
+    .item-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .item-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .item-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get anti-forgery token
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            // Handle quantity updates
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const cartItemId = this.dataset.cartItemId;
+                    const action = this.dataset.action;
+                    const quantitySpan = document.getElementById(`quantity-${cartItemId}`);
+                    let currentQuantity = parseInt(quantitySpan.textContent);
+
+                    if (action === 'increase') {
+                        currentQuantity += 1;
+                    } else if (action === 'decrease' && currentQuantity > 1) {
+                        currentQuantity -= 1;
+                    }
+
+                    // Update UI immediately for better UX
+                    quantitySpan.textContent = currentQuantity;
+
+                    // Update minus button disabled state
+                    const minusBtn = document.querySelector(`.minus-btn[data-cart-item-id="${cartItemId}"]`);
+                    minusBtn.disabled = currentQuantity <= 1;
+
+                    // Send update to server
+                    try {
+                        const formData = new FormData();
+                        formData.append('cartItemId', cartItemId);
+                        formData.append('quantity', currentQuantity);
+                        if (token) {
+                            formData.append('__RequestVerificationToken', token);
+                        }
+
+                        const response = await fetch('/Cart/Update', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            // Reload page to update totals
+                            location.reload();
+                        } else {
+                            // Revert UI if error
+                            console.error('Update failed');
+                            // Optionally show error message
+                        }
+                    } catch (error) {
+                        console.error('Error updating quantity:', error);
+                    }
+                });
+            });
+
+            // Handle item removal
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const cartItemId = this.dataset.cartItemId;
+
+                    if (confirm('Are you sure you want to remove this item?')) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('cartItemId', cartItemId);
+                            if (token) {
+                                formData.append('__RequestVerificationToken', token);
+                            }
+
+                            const response = await fetch('/Cart/Remove', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (response.ok) {
+                                location.reload();
+                            }
+                        } catch (error) {
+                            console.error('Error removing item:', error);
+                        }
+                    }
+                });
+            });
+
+            // Handle clear cart
+            document.getElementById('clearCartBtn')?.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to clear your entire cart?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

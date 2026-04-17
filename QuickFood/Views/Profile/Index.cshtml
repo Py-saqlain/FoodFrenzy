@@ -1,0 +1,309 @@
+﻿@model FoodFrenzy.Models.ApplicationUser
+@{
+    var orderHistory = ViewBag.OrderHistory as List<FoodFrenzy.Models.OrderHistory> ?? new List<FoodFrenzy.Models.OrderHistory>();
+    var firstName = "";
+    var lastName = "";
+    if (!string.IsNullOrEmpty(Model.FullName))
+    {
+        var nameParts = Model.FullName.Split(' ');
+        firstName = nameParts.Length > 0 ? nameParts[0] : "";
+        lastName = nameParts.Length > 1 ? nameParts[1] : "";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - FoodFrenzy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/profile.css">
+</head>
+<body>
+    <section class="page-header">
+        <div class="container">
+            <h1>My Profile</h1>
+            <p>Manage your account settings</p>
+        </div>
+    </section>
+
+    <section class="profile-section">
+        <div class="container profile-container">
+            <!-- Success/Error Messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        @if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+                        {
+                            @($"{firstName[0]}{lastName[0]}")
+                        }
+                        else if (!string.IsNullOrEmpty(Model.FullName))
+                        {
+                            var nameParts = Model.FullName.Split(' ');
+                            if (nameParts.Length >= 2)
+                            {
+                                @($"{nameParts[0][0]}{nameParts[1][0]}")
+                            }
+                            else if (nameParts.Length == 1)
+                            {
+                                @($"{nameParts[0][0]}")
+                            }
+                        }
+                        else
+                        {
+                            <text>AR</text>
+                        }
+                        <div class="avatar-edit">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <h2>@Model.FullName</h2>
+                    <p>@Model.Email</p>
+                </div>
+
+                <div class="profile-menu">
+                    <a href="#personal-info" class="menu-item active" onclick="showSection('personal-info')">
+                        <i class="fas fa-user"></i>
+                        <span>Personal Info</span>
+                    </a>
+                    <a href="#change-password" class="menu-item" onclick="showSection('change-password')">
+                        <i class="fas fa-lock"></i>
+                        <span>Change Password</span>
+                    </a>
+                    <a href="#address" class="menu-item" onclick="showSection('address')">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Address</span>
+                    </a>
+                    <a href="#order-history" class="menu-item" onclick="showSection('order-history')">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Order History</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <!-- Personal Info -->
+                <div id="personal-info" class="content-section active">
+                    <div class="content-header">
+                        <h2>Personal Information</h2>
+                    </div>
+                    <div class="content-body">
+                        @Html.AntiForgeryToken()
+                        <form method="post" asp-action="UpdateProfile">
+                            <div class="form-section">
+                                <h3>Basic Information</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="firstName">First Name</label>
+                                        <input type="text" id="firstName" name="firstName" class="form-control" value="@firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Last Name</label>
+                                        <input type="text" id="lastName" name="lastName" class="form-control" value="@lastName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email Address</label>
+                                        <input type="email" id="email" name="email" class="form-control" value="@Model.Email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Phone Number</label>
+                                        <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" value="@Model.PhoneNumber">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div id="change-password" class="content-section">
+                    <div class="content-header">
+                        <h2>Change Password</h2>
+                    </div>
+                    <div class="content-body">
+                        @Html.AntiForgeryToken()
+                        <form method="post" asp-action="ChangePassword">
+                            <div class="form-section">
+                                <h3>Change Password</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password</label>
+                                        <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmPassword">Confirm New Password</label>
+                                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div id="address" class="content-section">
+                    <div class="content-header">
+                        <h2>Address</h2>
+                    </div>
+                    <div class="content-body">
+                        @Html.AntiForgeryToken()
+                        <form method="post" asp-action="UpdateAddress">
+                            <div class="form-section">
+                                <h3>Address</h3>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label for="address">Address</label>
+                                        <input type="text" id="address" name="address" class="form-control" value="@Model.Address" required>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Update Address</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order History -->
+                <!-- Order History -->
+                <div id="order-history" class="content-section">
+                    <div class="content-header">
+                        <h2>Order History</h2>
+                    </div>
+                    <div class="content-body">
+                        <div class="form-section">
+                            <h3>Order History</h3>
+                            @{
+                                var orders = ViewBag.Orders as List<FoodFrenzy.Models.Order> ?? new List<FoodFrenzy.Models.Order>();
+                            }
+
+                            @if (!orders.Any())
+                            {
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You haven't placed any orders yet.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Items</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th>Tracking</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var order in orders)
+                                            {
+                                                <tr>
+                                                    <td>#@order.OrderNumber</td>
+                                                    <td>@order.OrderDate.ToString("dd-MMM-yyyy")</td>
+                                                    <td>
+                                                        @if (order.OrderItems != null && order.OrderItems.Any())
+                                                        {
+                                                            <div class="order-items">
+                                                                @foreach (var item in order.OrderItems.Take(2))
+                                                                {
+                                                                    <div>@item.FoodItemName x @item.Quantity</div>
+                                                                }
+                                                                @if (order.OrderItems.Count > 2)
+                                                                {
+                                                                    <div class="text-muted">+ @(order.OrderItems.Count - 2) more items</div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">No items</span>
+                                                        }
+                                                    </td>
+                                                    <td>Rs @order.Total.ToString("N2")</td>
+                                                    <td>
+                                                        <span class="badge @(order.Status == "Delivered" ? "bg-success" :
+                                                                                                                        order.Status == "Cancelled" ? "bg-danger" :
+                                                                                                                        order.Status == "Shipped" ? "bg-info" :
+                                                                                                                        order.Status == "Processing" ? "bg-warning" :
+                                                                                                                        "bg-secondary")">
+                                                    @order.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                                                        {
+                                                            <small class="text-muted">@order.TrackingNumber</small>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">-</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked menu item
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

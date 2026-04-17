@@ -1,0 +1,176 @@
+﻿@* Views/Admin/_Annoucement.cshtml *@
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0"><i class="fas fa-bullhorn"></i> Send Message to All Users</h4>
+    </div>
+    <div class="card-body">
+        <form action="/Admin/AnnouncementNotification" method="post" id="messageForm">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label for="message" class="form-label">Message:</label>
+                <textarea class="form-control" id="message" name="message"
+                          rows="4" placeholder="Type your message here..."
+                          required maxlength="200"></textarea>
+                <div class="form-text">
+                    This message will appear as an alert on ALL users' homepage immediately.
+                    <span id="charCount">200</span> characters remaining.
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Live Alert:</strong> Users will see this message as a popup alert on their homepage.
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-paper-plane"></i> Send Message to All Users
+                </button>
+                <button type="button" id="testMessage" class="btn btn-warning btn-lg">
+                    <i class="fas fa-bell"></i> Test Alert
+                </button>
+            </div>
+        </form>
+
+        <!-- Message Preview -->
+        <div class="mt-4">
+            <h5><i class="fas fa-eye"></i> Message Preview</h5>
+            <div class="alert alert-warning mt-2" id="messagePreview">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <div>
+                        <strong>Alert: </strong>
+                        <span id="previewText">Your message will appear here...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-muted">
+                <small>This is how users will see your message</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Character counter
+        $('#message').on('input', function() {
+            const maxLength = 200;
+            const currentLength = $(this).val().length;
+            const remaining = maxLength - currentLength;
+            $('#charCount').text(remaining);
+
+            if (remaining < 0) {
+                $('#charCount').addClass('text-danger');
+                $('#charCount').text('0 - Too long!');
+            } else {
+                $('#charCount').removeClass('text-danger');
+            }
+
+            // Update preview
+            updatePreview($(this).val());
+        });
+
+        // Test button - shows what users will see
+        $('#testMessage').click(function() {
+            const testMsg = "🔄 Test alert at " + new Date().toLocaleTimeString();
+            $('#message').val(testMsg);
+            updatePreview(testMsg);
+
+            // Show the alert effect
+            showAlertPreview(testMsg);
+        });
+
+        // Update preview
+        function updatePreview(message) {
+            if (message.trim()) {
+                $('#previewText').text(message);
+            } else {
+                $('#previewText').text('Your message will appear here...');
+            }
+        }
+
+        // Show alert preview animation
+        function showAlertPreview(message) {
+            // Create a mock alert that looks like what users will see
+            const alertDiv = $('<div class="user-alert-preview"></div>');
+            alertDiv.html(`
+                <div class="alert alert-warning alert-dismissible fade show shadow-lg" role="alert"
+                     style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle fs-4 me-3"></i>
+                        <div>
+                            <strong class="d-block">FoodFrenzy Alert</strong>
+                            <span>${message}</span>
+                        </div>
+                        <button type="button" class="btn-close ms-auto" onclick="$(this).closest('.user-alert-preview').remove()"></button>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(alertDiv);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Form submission
+        $('#messageForm').submit(function(e) {
+            const message = $('#message').val().trim();
+
+            if (!message) {
+                e.preventDefault();
+                alert('Please enter a message');
+                return false;
+            }
+
+            if (message.length > 200) {
+                e.preventDefault();
+                alert('Message is too long (maximum 200 characters)');
+                return false;
+            }
+
+            if (!confirm('Send this message to ALL users?')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Show loading
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalText = submitBtn.html();
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Sending...');
+
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                submitBtn.prop('disabled', false);
+                submitBtn.html(originalText);
+            }, 3000);
+        });
+
+        // Initialize
+        updatePreview('');
+    });
+</script>
+
+<style>
+    .user-alert-preview {
+        animation: slideInRight 0.3s ease-out;
+    }
+
+    @@keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
